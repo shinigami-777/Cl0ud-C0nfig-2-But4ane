@@ -1,4 +1,4 @@
-package main
+package converter
 
 // CloudConfig represents the root of a cloud-config YAML file.
 type CloudConfig struct {

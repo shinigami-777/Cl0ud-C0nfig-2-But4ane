@@ -1,4 +1,4 @@
-package main
+package converter
 
 func Convert(cc *CloudConfig) *ButaneConfig {
 	bc := &ButaneConfig{

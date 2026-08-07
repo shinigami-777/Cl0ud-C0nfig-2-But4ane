@@ -1,4 +1,4 @@
-package main
+package converter
 
 // ButaneConfig represents the root of a Butane YAML file.
 type ButaneConfig struct {

@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 
+	"Cl0ud-C0nfig-2-But4ane/internal/converter"
 	"gopkg.in/yaml.v3"
 )
 
@@ -27,13 +28,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	var cc CloudConfig
+	var cc converter.CloudConfig
 	if err := yaml.Unmarshal(input, &cc); err != nil {
 		fmt.Fprintf(os.Stderr, "Error parsing cloud-config YAML: %v\n", err)
 		os.Exit(1)
 	}
 
-	bc := Convert(&cc)
+	bc := converter.Convert(&cc)
 
 	outBytes, err := yaml.Marshal(bc)
 	if err != nil {
