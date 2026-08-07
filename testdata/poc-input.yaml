@@ -1,0 +1,24 @@
+#cloud-config
+users:
+  - name: kubernetes
+    groups: sudo, docker
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExample...
+
+write_files:
+  - path: /etc/kubernetes/pki/ca.crt
+    content: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkV4YW1wbGUKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    encoding: base64
+    permissions: '0640'
+    owner: root:root
+  - path: /run/kubeadm/kubeadm-join-config.yaml
+    content: |
+      apiVersion: kubeadm.k8s.io/v1beta3
+      kind: JoinConfiguration
+    permissions: '0640'
+
+runcmd:
+  - kubeadm join --config /run/kubeadm/kubeadm-join-config.yaml
+  - [systemctl, restart, kubelet]
