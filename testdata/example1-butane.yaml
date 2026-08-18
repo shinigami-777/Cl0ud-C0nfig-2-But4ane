@@ -1,0 +1,56 @@
+variant: flatcar
+version: 1.1.0
+passwd:
+    users:
+        - name: kubernetes
+          groups:
+            - sudo
+            - docker
+          shell: /bin/bash
+          ssh_authorized_keys:
+            - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExample
+          password_hash: '!'
+storage:
+    files:
+        - path: /etc/kubernetes/pki/ca.crt
+          mode: 416
+          user:
+            name: root
+          group:
+            name: root
+          contents:
+            inline: |
+                -----BEGIN CERTIFICATE-----
+                Example
+                -----END CERTIFICATE-----
+        - path: /run/kubeadm/kubeadm-join-config.yaml
+          mode: 416
+          contents:
+            inline: |
+                apiVersion: kubeadm.k8s.io/v1beta3
+                kind: JoinConfiguration
+        - path: /etc/cc-runcmd.sh
+          mode: 493
+          contents:
+            inline: |
+                #!/bin/bash
+                set -euo pipefail
+                kubeadm join --config /run/kubeadm/kubeadm-join-config.yaml
+                "systemctl" "restart" "kubelet"
+systemd:
+    units:
+        - name: cc-runcmd.service
+          enabled: true
+          contents: |
+            [Unit]
+            Description=cloud-config runcmd
+            Wants=network-online.target
+            After=network-online.target
+
+            [Service]
+            Type=oneshot
+            RemainAfterExit=yes
+            ExecStart=/bin/bash /etc/cc-runcmd.sh
+
+            [Install]
+            WantedBy=multi-user.target
